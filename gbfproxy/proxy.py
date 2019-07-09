@@ -12,7 +12,8 @@ SUPPORTED_PROTOCOLS = [
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
-    address_family = socket.AF_INET6
+    # address_family = socket.AF_INET6
+    address_family = socket.AF_INET
     daemon_threads = True
 
 
