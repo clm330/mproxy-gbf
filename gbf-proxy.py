@@ -67,7 +67,7 @@ def main():
     uri_matcher = GBFUriMatcher(gbf_conf.matcher)
     headers_matcher = GBFHeadersMatcher()
     cache_namer = GBFCacheNamer()
-    executor = ThreadPoolExecutor(5)
+    executor = ThreadPoolExecutor(100)
     handler_cls = gbf_caching_handler_factory(gbf_conf, executor, uri_matcher,
         headers_matcher, cache_namer)
 

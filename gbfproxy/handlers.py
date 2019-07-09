@@ -66,10 +66,27 @@ CONTENT_LEN = 'content-length'
 ACCESS_CONTROL_ALLOW = 'access-control-allow-origin'
 
 
-def write_file(path, data, url, url_list_path):
+def write_file(path, data, url, url_list_path,code):
+    print("I am writing file.")
     temp_path = path + TEMP_SUFFIX
     if os.path.exists(path) or os.path.exists(temp_path):
-        return
+        print("The file is exist.")
+        print("This file size is : ",os.path.getsize(temp_path))
+
+        # if code == 304 :
+        #     os.remove(temp_path)
+        #     return
+
+
+        if os.path.getsize(temp_path) == 0:
+            print("Remove this file.")
+            os.remove(temp_path)
+            if code == 304:
+                print("This file is in your cache.")
+                return
+        else:
+            print("This file size if not 0. Something wrong.")
+            return
 
     cache_dir = os.path.dirname(path)
     if not os.path.exists(cache_dir):
@@ -89,6 +106,7 @@ def write_file(path, data, url, url_list_path):
     os.rename(temp_path, path)
 
     if os.stat(path).st_size == 0:
+        print("I finish writing file. But the file size is 0.")
         logging.error('Bad file size: {0}'.format(path))
         os.remove(path)
 
@@ -127,9 +145,13 @@ def gbf_caching_handler_factory(gbf_conf, executor, uri_matcher,
         def _cache_data(self):
             cache_filename = self.CACHE_NAMER.to_cache_name(self.path)
             cache_path = os.path.join(self.CACHE_DIR, cache_filename)
+            print("cache_filename is :",cache_filename)
+            print("cache_path is :",cache_path)
             response = None
 
             if cache_filename and os.path.exists(cache_path):
+                # print("cache_filename is :",cache_filename)
+                # print("cache_path is :",cache_path)
                 print("I find the file..")
                 logging.debug('Cache hit: {0} ({1})'.format(self.path,
                     cache_path))
@@ -148,12 +170,16 @@ def gbf_caching_handler_factory(gbf_conf, executor, uri_matcher,
                 print("I CANNOT find the file..")
                 response = self._fetch_path()
                 data = response.content
+                # print("The data file size is :",len(response.content))
                 headers = response.headers
+                status_code = response.status_code
+                print("status code :",response.status_code)
+                # print(headers)
 
                 if cache_filename and self.HEADERS_MATCHER.matches(headers):
                     logging.debug('Cache miss: {0}'.format(self.path))
                     fut = executor.submit(write_file, cache_path, data,
-                        self.path, self.CACHE_LIST_PATH)
+                        self.path, self.CACHE_LIST_PATH, status_code)
 
             return response
 
