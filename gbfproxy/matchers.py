@@ -18,7 +18,33 @@ class GBFUriMatcher:
 class GBFHeadersMatcher:
     def matches(self, headers):
         content_type = headers['Content-Type'].lower()
-        return 'image' in content_type or 'audio' in content_type
+        
+        # if 'image' in content_type:
+        #     print("It is a image.")
+        # elif 'audio' in content_type:
+        #     print("It is a audio.")
+        # elif 'javascript' in content_type:
+        #     print("It is a javascript.")
+        # else:
+        #     print("This is neither image and audio. It is ",content_type)
+
+        
+        if 'image' in content_type:
+            return 'image'
+
+        elif 'audio' in content_type:
+            return 'audio'        
+
+        elif 'javascript' in content_type:
+            return 'javascript'
+
+        elif 'css' in content_type:
+            return 'css'
+
+        else:
+            return 0
+
+        # return 'image' in content_type or 'audio' in content_type or 'javascript' in content_type
 
 
 class GBFCacheNamer:

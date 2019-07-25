@@ -10,13 +10,17 @@ import logging.handlers
 import coloredlogs
 import os
 import argparse
+import threading
 
 
 LOG_FMT = ('%(asctime)s.%(msecs)03d '
            '[(%(threadName)s) %(filename)s %(funcName)s %(lineno)d] '
            '%(levelname)s: %(message)s')
 GBF_INI_FILENAME = 'gbf-proxy.ini'
+dir_path = os.path.dirname(os.path.realpath(__file__))
 GBF_LOG_FILE = os.path.join('logs', 'gbf-proxy.log')
+GBF_LOG_FILE = os.path.join(dir_path, GBF_LOG_FILE)
+GBF_INI_FILENAME = os.path.join(dir_path, GBF_INI_FILENAME)
 
 
 PARSER = argparse.ArgumentParser(description='granblue fantasy caching proxy')
@@ -81,4 +85,11 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+
+    try:
+        # thread.start_new_thread(main)
+        t = threading.Thread(target = main,args = ())
+        t.start()
+    except:
+        print('e')
+    # main()
